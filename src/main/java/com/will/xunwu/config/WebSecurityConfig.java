@@ -1,5 +1,10 @@
 package com.will.xunwu.config;
 
+import com.will.xunwu.security.AuthProvider;
+import com.will.xunwu.security.LoginUrlEntryPoint;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -25,12 +30,38 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
                .and()
                .formLogin()
                .loginProcessingUrl("/login")
-               .and();
+               .and()
+               .logout()
+               .logoutUrl("/logout")
+               .logoutSuccessUrl("/logout/page")
+               .deleteCookies("JSESSIONID")
+               .invalidateHttpSession(true)
+               .and()
+               .exceptionHandling()
+               .authenticationEntryPoint(urlEntryPoint())
+               .accessDeniedPage("/403");
        http.csrf().disable();
        http.headers().frameOptions().sameOrigin();
 
     }
 
+    /**
+     * 自定义认证策略
+     */
+    @Autowired
+    public void configGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authProvider()).eraseCredentials(true);
+    }
+
+    @Bean
+    public AuthProvider authProvider() {
+        return new AuthProvider();
+    }
+
+    @Bean
+    public LoginUrlEntryPoint urlEntryPoint() {
+        return new LoginUrlEntryPoint("/user/login");
+    }
 
 
 }
