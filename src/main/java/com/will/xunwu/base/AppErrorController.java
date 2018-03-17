@@ -1,19 +1,17 @@
 package com.will.xunwu.base;
 
-import org.springframework.stereotype.Controller;
-
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.boot.autoconfigure.web.ErrorController;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * web错误 全局配置
@@ -48,9 +46,10 @@ public class AppErrorController implements ErrorController {
                 return "404";
             case 500:
                 return "500";
+            default:
+                return "index";
         }
 
-        return "index";
     }
 
     /**
