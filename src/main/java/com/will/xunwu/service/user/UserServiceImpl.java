@@ -1,4 +1,4 @@
-package com.will.xunwu.service.impl;
+package com.will.xunwu.service.user;
 
 import com.will.xunwu.entity.Role;
 import com.will.xunwu.entity.User;

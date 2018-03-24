@@ -68,6 +68,7 @@ public class ApiResponse {
     public enum Status {
         SUCCESS(200,"OK"),
         BAD_REQUEST(400,"Bad Request"),
+        NOT_FOUND(404,"NOT FOUND"),
         INTERNAL_SERVER_ERROR(500,"Unknown Internal Error"),
         NOT_VALID_PARAM(40005,"Not valid Params"),
         NOT_SUPPORTED_OPERATION(40006,"Operation not supportes"),

@@ -31,7 +31,6 @@ function changeRegion(region, cityName) {
         }
         var selectedVal = region.val();
         region.html(tipStr);
-
         var str = "";
         $.each(data.data, function (i, item) {
             if (item.en_name === selectedVal) {

@@ -1,6 +1,7 @@
 package com.will.xunwu.config;
 
 import com.will.xunwu.security.AuthProvider;
+import com.will.xunwu.security.LoginAuthFailHandler;
 import com.will.xunwu.security.LoginUrlEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +30,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
                "USER")
                .and()
                .formLogin()
-               .loginProcessingUrl("/login")
+               .loginProcessingUrl("/login") //配置角色登陆处理入口
+               .failureHandler(authFailHandler())
                .and()
                .logout()
                .logoutUrl("/logout")
@@ -61,6 +63,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
     @Bean
     public LoginUrlEntryPoint urlEntryPoint() {
         return new LoginUrlEntryPoint("/user/login");
+    }
+
+    @Bean
+    public LoginAuthFailHandler authFailHandler(){
+        return new LoginAuthFailHandler(urlEntryPoint());
     }
 
 
