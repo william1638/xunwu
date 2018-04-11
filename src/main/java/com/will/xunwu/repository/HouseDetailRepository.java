@@ -8,4 +8,6 @@ import org.springframework.data.repository.CrudRepository;
  * @date 2018/3/24
  */
 public interface HouseDetailRepository extends CrudRepository<HouseDetail,Long> {
+
+    HouseDetail findByHouseId(Long houseId);
 }

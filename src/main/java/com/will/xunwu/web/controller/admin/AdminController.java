@@ -3,20 +3,18 @@ package com.will.xunwu.web.controller.admin;
 import com.google.gson.Gson;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
+import com.will.xunwu.base.ApiDataTableResponse;
 import com.will.xunwu.base.ApiResponse;
 import com.will.xunwu.entity.SupportAddress;
-import com.will.xunwu.service.IAddressService;
-import com.will.xunwu.service.IHouseService;
-import com.will.xunwu.service.IQiNiuService;
-import com.will.xunwu.service.ServiceResult;
-import com.will.xunwu.web.dto.HouseDTO;
-import com.will.xunwu.web.dto.QiNiuPutRet;
-import com.will.xunwu.web.dto.SupportAddressDTO;
+import com.will.xunwu.service.*;
+import com.will.xunwu.web.dto.*;
+import com.will.xunwu.web.form.DatatableSearch;
 import com.will.xunwu.web.form.HouseForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -94,6 +92,12 @@ public class AdminController {
 
     }
 
+    /***
+     * 新增房源功能页
+     * @param houseform
+     * @param bindingResule
+     * @return
+     */
     @PostMapping("admin/add/house")
     @ResponseBody
     public ApiResponse addHouse(@Valid @ModelAttribute("form-house-add") HouseForm houseform
@@ -114,5 +118,66 @@ public class AdminController {
         }
         return ApiResponse.ofSuccess(ApiResponse.Status.NOT_VALID_PARAM);
     }
+
+    /***
+     * 房源列表页
+     */
+    @GetMapping("admin/house/list")
+    public String houseListPage(){
+        return "admin/house-list";
+    }
+
+    /***
+     *
+     * @return
+     */
+    @RequestMapping("admin/houses")
+    @ResponseBody
+    public ApiDataTableResponse houses(@ModelAttribute DatatableSearch searchBody){
+        ServiceMultiResult<HouseDTO> result = houseService.adminQuery(searchBody);
+        ApiDataTableResponse response = new ApiDataTableResponse(ApiResponse.Status.SUCCESS);
+        response.setData(result.getResult());
+        response.setRecordsFiltered(result.getTotal());
+        response.setRecordsTotal(result.getTotal());
+        response.setDraw(searchBody.getDraw());
+        return response;
+    }
+
+    /***
+     * 房源信息编辑页
+     * @return
+     */
+    @GetMapping("admin/houes/edit")
+    public String houseEditPage(@RequestParam(value = "id") Long id, Model model){
+        if(id == null || id <1 ){
+            return "404";
+        }
+        ServiceResult<HouseDTO> serviceResult = houseService.findCompleteOne(id);
+        if(!serviceResult.isSuccess()){
+            return "404";
+        }
+        HouseDTO result = serviceResult.getResult();
+        model.addAttribute("house",result);
+
+        Map<SupportAddress.Level, SupportAddressDTO> addressMap = addressService.findCityAndRegion(result.getCityEnName(), result.getRegionEnName());
+        model.addAttribute("city", addressMap.get(SupportAddress.Level.CITY));
+        model.addAttribute("region", addressMap.get(SupportAddress.Level.REGION));
+
+        HouseDetailDTO detailDTO = result.getHouseDetail();
+        ServiceResult<SubwayDTO> subwayServiceResult = addressService.findSubway(detailDTO.getSubwayLineId());
+        if (subwayServiceResult.isSuccess()) {
+            model.addAttribute("subway", subwayServiceResult.getResult());
+        }
+
+        ServiceResult<SubwayStationDTO> subwayStationServiceResult = addressService.findSubwayStation(detailDTO.getSubwayStationId());
+        if (subwayStationServiceResult.isSuccess()) {
+            model.addAttribute("station", subwayStationServiceResult.getResult());
+        }
+
+        return "admin/house-edit";
+
+    }
+
+
 
 }

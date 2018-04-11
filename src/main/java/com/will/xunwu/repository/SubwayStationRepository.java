@@ -9,7 +9,7 @@ import java.util.List;
  * @author William
  * @date 2018/3/24
  */
-public interface SubwayStationRepostory extends CrudRepository<SubwayStation,Long> {
+public interface SubwayStationRepository extends CrudRepository<SubwayStation,Long> {
 
     List<SubwayStation> findAllBySubwayId(Long subwayId);
 

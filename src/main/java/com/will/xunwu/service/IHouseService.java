@@ -1,6 +1,7 @@
 package com.will.xunwu.service;
 
 import com.will.xunwu.web.dto.HouseDTO;
+import com.will.xunwu.web.form.DatatableSearch;
 import com.will.xunwu.web.form.HouseForm;
 
 /**
@@ -10,4 +11,13 @@ import com.will.xunwu.web.form.HouseForm;
  */
 public interface IHouseService {
     ServiceResult<HouseDTO> save(HouseForm houseForm);
+
+    ServiceMultiResult<HouseDTO> adminQuery(DatatableSearch searchBody);
+
+    /**
+     * 查询完整房源信息
+     * @param id
+     * @return
+     */
+    ServiceResult<HouseDTO> findCompleteOne(Long id);
 }

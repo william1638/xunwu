@@ -4,10 +4,11 @@ import com.will.xunwu.entity.Subway;
 import com.will.xunwu.entity.SubwayStation;
 import com.will.xunwu.entity.SupportAddress;
 import com.will.xunwu.repository.SubwayRepository;
-import com.will.xunwu.repository.SubwayStationRepostory;
+import com.will.xunwu.repository.SubwayStationRepository;
 import com.will.xunwu.repository.SupportAddressRepository;
 import com.will.xunwu.service.IAddressService;
 import com.will.xunwu.service.ServiceMultiResult;
+import com.will.xunwu.service.ServiceResult;
 import com.will.xunwu.web.dto.SubwayDTO;
 import com.will.xunwu.web.dto.SubwayStationDTO;
 import com.will.xunwu.web.dto.SupportAddressDTO;
@@ -32,7 +33,7 @@ public class AddressServiceImpl implements IAddressService {
     @Autowired
     private SubwayRepository subwayRepository ;
     @Autowired
-    private SubwayStationRepostory subwayStationRepostory;
+    private SubwayStationRepository subwayStationRepository;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -76,7 +77,7 @@ public class AddressServiceImpl implements IAddressService {
     @Override
     public List<SubwayStationDTO> findAllStationBySubway(Long subwayId) {
         List<SubwayStationDTO> result = new ArrayList<>();
-        List<SubwayStation> stations = subwayStationRepostory.findAllBySubwayId(subwayId);
+        List<SubwayStation> stations = subwayStationRepository.findAllBySubwayId(subwayId);
         if(stations.isEmpty()){
             return result;
         }
@@ -95,6 +96,30 @@ public class AddressServiceImpl implements IAddressService {
         result.put(SupportAddress.Level.CITY, modelMapper.map(city, SupportAddressDTO.class));
         result.put(SupportAddress.Level.REGION, modelMapper.map(region, SupportAddressDTO.class));
         return result;
+    }
+
+    @Override
+    public ServiceResult<SubwayDTO> findSubway(Long subwayId) {
+        if (subwayId == null) {
+            return ServiceResult.notFound();
+        }
+        Subway subway = subwayRepository.findOne(subwayId);
+        if (subway == null) {
+            return ServiceResult.notFound();
+        }
+        return ServiceResult.of(modelMapper.map(subway, SubwayDTO.class));
+    }
+
+    @Override
+    public ServiceResult<SubwayStationDTO> findSubwayStation(Long stationId) {
+        if (stationId == null) {
+            return ServiceResult.notFound();
+        }
+        SubwayStation station = subwayStationRepository.findOne(stationId);
+        if (station == null) {
+            return ServiceResult.notFound();
+        }
+        return ServiceResult.of(modelMapper.map(station, SubwayStationDTO.class));
     }
 
 
